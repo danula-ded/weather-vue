@@ -72,6 +72,12 @@ This project is automatically deployed to GitHub Pages on every push to the `mai
 - **Live URL**: https://danula-ded.github.io/weather-vue/
 - **Build Status**: ![Deploy to GitHub Pages](https://github.com/danula-ded/weather-vue/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)
 
+The deployment process:
+
+1. Installs dependencies
+2. Builds the project
+3. Deploys to GitHub Pages
+
 ## API
 
 The application uses the following APIs:
