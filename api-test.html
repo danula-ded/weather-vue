@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #0f0f23;
+        color: white;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+      button {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #5a6fd8;
+      }
+      pre {
+        background: #1a1a2e;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+      }
+      .success {
+        color: #43e97b;
+      }
+      .error {
+        color: #ff6b6b;
+      }
+      .info {
+        color: #4facfe;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🌤️ Weather API Test</h1>
+
+    <div class="test-section">
+      <h2>Geocoding API Test</h2>
+      <button onclick="testGeocoding()">Test Geocoding</button>
+      <div id="geocoding-result"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Weather API Test</h2>
+      <button onclick="testWeather()">Test Weather</button>
+      <div id="weather-result"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Full Flow Test</h2>
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="Enter city name"
+        value="London"
+        style="padding: 8px; margin: 5px; border-radius: 5px; border: none"
+      />
+      <button onclick="testFullFlow()">Test Full Flow</button>
+      <div id="full-flow-result"></div>
+    </div>
+
+    <script>
+      async function testGeocoding() {
+        const resultDiv = document.getElementById('geocoding-result');
+        resultDiv.innerHTML = '<p class="info">Testing Geocoding API...</p>';
+
+        try {
+          const response = await fetch(
+            'https://geocoding-api.open-meteo.com/v1/search?name=London&count=1&language=en&format=json'
+          );
+          const data = await response.json();
+
+          if (data.results && data.results.length > 0) {
+            resultDiv.innerHTML = `
+                        <p class="success">✅ Geocoding API работает!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          } else {
+            resultDiv.innerHTML = `
+                        <p class="error">❌ Geocoding API вернул пустой результат</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `
+                    <p class="error">❌ Geocoding API Error: ${error.message}</p>
+                `;
+        }
+      }
+
+      async function testWeather() {
+        const resultDiv = document.getElementById('weather-result');
+        resultDiv.innerHTML = '<p class="info">Testing Weather API...</p>';
+
+        try {
+          const today = new Date().toISOString().split('T')[0];
+          const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&hourly=temperature_2m&start_date=${today}&end_date=${tomorrow}`;
+
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (data.hourly && data.hourly.temperature_2m) {
+            resultDiv.innerHTML = `
+                        <p class="success">✅ Weather API работает!</p>
+                        <p class="info">Получено ${data.hourly.temperature_2m.length} точек данных</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          } else {
+            resultDiv.innerHTML = `
+                        <p class="error">❌ Weather API вернул неожиданный формат</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `
+                    <p class="error">❌ Weather API Error: ${error.message}</p>
+                `;
+        }
+      }
+
+      async function testFullFlow() {
+        const resultDiv = document.getElementById('full-flow-result');
+        const cityName = document.getElementById('cityInput').value;
+
+        if (!cityName) {
+          resultDiv.innerHTML = '<p class="error">❌ Пожалуйста, введите название города</p>';
+          return;
+        }
+
+        resultDiv.innerHTML = '<p class="info">Testing full flow for: ' + cityName + '</p>';
+
+        try {
+          // Step 1: Geocoding
+          resultDiv.innerHTML += '<p class="info">Step 1: Getting coordinates...</p>';
+          const geocodingResponse = await fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`
+          );
+          const geocodingData = await geocodingResponse.json();
+
+          if (!geocodingData.results || geocodingData.results.length === 0) {
+            resultDiv.innerHTML += '<p class="error">❌ City not found</p>';
+            return;
+          }
+
+          const location = geocodingData.results[0];
+          resultDiv.innerHTML += `<p class="success">✅ Found: ${location.name} (${location.latitude}, ${location.longitude})</p>`;
+
+          // Step 2: Weather
+          resultDiv.innerHTML += '<p class="info">Step 2: Getting weather data...</p>';
+          const today = new Date().toISOString().split('T')[0];
+          const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+          const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&hourly=temperature_2m&start_date=${today}&end_date=${tomorrow}`;
+          const weatherResponse = await fetch(weatherUrl);
+          const weatherData = await weatherResponse.json();
+
+          if (weatherData.hourly && weatherData.hourly.temperature_2m) {
+            resultDiv.innerHTML += `
+                        <p class="success">✅ Weather data received!</p>
+                        <p class="info">Temperature points: ${weatherData.hourly.temperature_2m.length}</p>
+                        <p class="info">First temperature: ${weatherData.hourly.temperature_2m[0]}°C</p>
+                        <p class="info">Last temperature: ${weatherData.hourly.temperature_2m[weatherData.hourly.temperature_2m.length - 1]}°C</p>
+                    `;
+          } else {
+            resultDiv.innerHTML += '<p class="error">❌ Weather data format error</p>';
+          }
+        } catch (error) {
+          resultDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+        }
+      }
+    </script>
+  </body>
+</html>

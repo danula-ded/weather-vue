@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TemperatureChart.vue > matches snapshot 1`] = `
+<div>
+  <div
+    class="chart-container"
+    data-v-3234bcc4=""
+  >
+    <canvas
+      data-v-3234bcc4=""
+      role="img"
+    >
+      <p>
+        
+      </p>
+    </canvas>
+  </div>
+</div>
+`;
