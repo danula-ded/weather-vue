@@ -67,16 +67,34 @@ npm run build && npm run preview
 
 ## Deployment
 
-This project is automatically deployed to GitHub Pages on every push to the `main` branch.
+This project is deployed to GitHub Pages using the `gh-pages` package.
 
-- **Live URL**: https://danula-ded.github.io/weather-vue/
-- **Build Status**: ![Deploy to GitHub Pages](https://github.com/danula-ded/weather-vue/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)
+### Deploy to GitHub Pages
 
-The deployment process:
+```bash
+npm run deploy
+```
 
-1. Installs dependencies
-2. Builds the project
-3. Deploys to GitHub Pages
+This command will:
+
+1. Build the project (`npm run build`)
+2. Deploy the `dist` folder to GitHub Pages
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+```bash
+# Build the project
+npm run build
+
+# Deploy to GitHub Pages
+npx gh-pages -d dist
+```
+
+### Live URL
+
+Your application will be available at: **https://danula-ded.github.io/weather-vue/**
 
 ## API
 

@@ -2,6 +2,7 @@
   "name": "weather-vue",
   "private": true,
   "version": "1.0.1",
+  "homepage": "https://danula-ded.github.io/weather-vue",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .js,.ts,.vue",
     "lint:fix": "eslint . --ext .js,.ts,.vue",
-    "test": "vitest"
+    "test": "vitest",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "chart.js": "^4.5.0",
@@ -30,6 +32,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-vue": "^10.3.0",
+    "gh-pages": "^6.3.0",
     "jsdom": "^26.1.0",
     "prettier": "^3.6.2",
     "typescript": "~5.8.3",
